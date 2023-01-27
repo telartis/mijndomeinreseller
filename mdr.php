@@ -2,7 +2,6 @@
 
 /**
  * Project:     MijnDomeinReseller (MDR) API
- *
  * File:        /libbase/mdr.php
  * @author      Jeroen de Jong <jeroen@telartis.nl>
  * @copyright   2016-2017 Telartis BV
