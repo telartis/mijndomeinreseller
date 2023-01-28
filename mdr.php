@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Project:     MijnDomeinReseller (MDR) API
+ * Project:     MijnDomeinReseller (MDR) API PHP Client
  * File:        mdr.php
  * @author      Jeroen de Jong <jeroen@telartis.nl>
  * @copyright   2016-2017 Telartis BV
  * @version     1.01
  * @link        https://www.mijndomeinreseller.nl/api/
  *
- * With this PHP class you can easily access the MijnDomeinReseller API.
+ * With this PHP client class you can easily access the MijnDomeinReseller API.
  * You must of course be a MDR customer to be able to use it.
  *
  */
