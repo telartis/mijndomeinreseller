@@ -2,15 +2,14 @@
 
 /**
  * Project:     MijnDomeinReseller (MDR) API
- * File:        /libbase/mdr.php
+ * File:        mdr.php
  * @author      Jeroen de Jong <jeroen@telartis.nl>
  * @copyright   2016-2017 Telartis BV
  * @version     1.01
+ * @link        https://www.mijndomeinreseller.nl/api/
  *
  * With this PHP class you can easily access the MijnDomeinReseller API.
  * You must of course be a MDR customer to be able to use it.
- *
- * See also: https://www.mijndomeinreseller.nl/api/
  *
  */
 
@@ -19,7 +18,7 @@
 
 === Example code:
 
-$mdr = new \libbase\mdr($user, $pass);
+$mdr = new \telartis\mijndomeinreseller\mdr($user, $pass);
 
 $domain = 'example.com';
 
@@ -119,7 +118,7 @@ whois
 
 */
 
-namespace libbase;
+namespace telartis\mijndomeinreseller;
 
 class mdr
 {
