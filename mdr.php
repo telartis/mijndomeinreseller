@@ -5,10 +5,10 @@
  * File:        mdr.php
  * @author      Jeroen de Jong <jeroen@telartis.nl>
  * @copyright   2016-2017 Telartis BV
- * @version     1.01
+ * @version     1.02
  * @link        https://www.mijndomeinreseller.nl/api/
  *
- * With this PHP client class you can easily access the MijnDomeinReseller API.
+ * With this PHP class you can easily access the MijnDomeinReseller API.
  * You must of course be a MDR customer to be able to use it.
  *
  */
@@ -104,6 +104,7 @@ newgtld_list(): array [tld, sunrise_start, sunrise_end, landrush, golive, is_liv
 tld_list(): array
 tld_get_details($tld): array result
 _tld_price(array $details, string $key): int
+_sanitize_str(array $array, string $name, string $default = ''): string
 purchase_price(array $details): int
 transfer_price(array $details): int
 renew_price(array $details): int
@@ -214,6 +215,7 @@ class mdr
      */
     private function _dns_record_add_modify_data($domain, $subdomain, $record_type, $destination, $mx_pref, $weight, $port)
     {
+        $data = [];
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
         $subdomain = $this->_fix_subdomain($domain, $subdomain);
@@ -399,7 +401,7 @@ class mdr
      */
     public function contact_add($contact)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         foreach ($contact as $key => $value) {
             $data[$key] = $value;
@@ -433,7 +435,7 @@ class mdr
      */
     public function contact_get_details($contact_id)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         $data['contact_id'] = $contact_id;
 
@@ -449,7 +451,7 @@ class mdr
      */
     public function contact_list($sort = '', $order = 0)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         if ($sort) {
             $data['sort'] = $sort;
@@ -496,7 +498,7 @@ class mdr
      */
     public function dns_get_details($domain, $extra_info = '')
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -596,7 +598,7 @@ class mdr
      */
     public function dns_record_del($domain, $record_id)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -616,7 +618,7 @@ class mdr
      */
     public function dns_record_del_by_value($domain, $subdomain, $record_type, $mx_pref = '')
     {
-        $data['command'] = 'dns_record_del';
+        $data = ['command' => 'dns_record_del'];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -659,7 +661,7 @@ class mdr
      */
     public function dns_record_add($domain, $subdomain, $record_type, $destination, $mx_pref = '', $weight = '', $port = '')
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
         $data = array_merge($data, $this->_dns_record_add_modify_data($domain, $subdomain, $record_type, $destination, $mx_pref, $weight, $port));
 
         return $this->do_webservice($data, $data['host'].'.'.$domain.' '.$record_type.rtrim(' '.$mx_pref).rtrim(' '.$weight).rtrim(' '.$port).' '.$destination);
@@ -680,7 +682,7 @@ class mdr
      */
     public function dns_record_modify($domain, $record_id, $subdomain, $record_type, $destination, $mx_pref = '', $weight = '', $port = '')
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
         $data['record_id'] = $record_id;
         $data = array_merge($data, $this->_dns_record_add_modify_data($domain, $subdomain, $record_type, $destination, $mx_pref, $weight, $port));
 
@@ -817,7 +819,7 @@ class mdr
      */
     public function dns_ttl_modify($domain, $ttl = 900)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -905,7 +907,7 @@ class mdr
      */
     public function domain_auth_info($domain)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -920,7 +922,7 @@ class mdr
      */
     public function domain_delete($domain)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -935,7 +937,7 @@ class mdr
      */
     public function domain_get_details($domain)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -966,7 +968,7 @@ class mdr
      */
     public function domain_list($tld = '', $sort = '', $order = 0, $begin = '')
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         $data['tld']   = $tld;
         $data['sort']  = $sort;
@@ -1003,7 +1005,7 @@ class mdr
      */
     public function domain_list_delete()
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         $result = $this->do_webservice($data);
 
@@ -1037,7 +1039,7 @@ class mdr
      */
     public function domain_modify_contacts($domain, $registrant_id, $admin_id, $tech_id, $bill_id)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1064,7 +1066,7 @@ class mdr
      */
     public function domain_modify_ns($domain, $gebruik_dns = false, $ns_id = '', $dns_template = '')
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1085,7 +1087,7 @@ class mdr
      */
     public function domain_push_request($domain, $authkey)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1108,7 +1110,7 @@ class mdr
      */
     public function domain_register($domain, $gebruik_dns, $dns_template, $registrant_id, $admin_id, $tech_id, $bill_id)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1137,7 +1139,7 @@ class mdr
      */
     public function domain_renew($domain, $duur)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1155,7 +1157,7 @@ class mdr
      */
     public function domain_restore($domain)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1176,7 +1178,7 @@ class mdr
      */
     public function domain_set_autorenew($domain, $autorenew, $registrant_approve = true)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1207,7 +1209,7 @@ class mdr
      */
     public function domain_set_lock($domain, $lock)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1231,7 +1233,7 @@ class mdr
      */
     public function domain_transfer($domain, $authkey, $gebruik_dns, $dns_template, $registrant_id, $admin_id, $tech_id, $bill_id)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
@@ -1266,7 +1268,7 @@ class mdr
      */
     public function nameserver_add($ns1, $ns2, $ns3 = '', $ns1_ip = '', $ns2_ip = '', $ns3_ip = '')
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         $auto = true;
         $auto = $auto ? 'true' : 'false';
@@ -1289,7 +1291,7 @@ class mdr
      */
     public function nameserver_list()
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         $result = $this->do_webservice($data);
 
@@ -1412,7 +1414,7 @@ class mdr
      */
     public function newgtld_list()
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
         $result = $this->do_webservice($data);
         $list = [];
         if (!$this->has_error($result)) {
@@ -1438,7 +1440,7 @@ class mdr
      */
     public function tld_list()
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
         $result = $this->do_webservice($data);
         $list = [];
         if (!$this->has_error($result)) {
@@ -1458,7 +1460,7 @@ class mdr
      */
     public function tld_get_details($tld)
     {
-        $data['command'] = __FUNCTION__;
+        $data = ['command' => __FUNCTION__];
 
         $data['tld'] = $tld;
 
@@ -1488,17 +1490,42 @@ class mdr
      */
     private function _tld_price(array $details, string $key): int
     {
-        $price = (int) str_replace('.', '', sanitize_str($details, "prijs_$key", '0'));
-
-        $rate = sanitize_str($details, 'munt_wisselkoers', 0);
+        $price = (int) str_replace('.', '', $this->_sanitize_str($details, "prijs_$key", '0'));
+        $rate = $this->_sanitize_str($details, 'munt_wisselkoers', '0');
         if ($rate) {
-            $currency = sanitize_str($details, "prijs_${key}_munt", 'EUR');
+            $currency = $this->_sanitize_str($details, "prijs_${key}_munt", 'EUR');
             if ($currency && $currency != 'EUR') {
                 $price = (int) round($price * $rate);
             }
         }
 
         return $price;
+    }
+
+    /**
+     * Sanitize string
+     *
+     * @param  array    $array    Associative array
+     * @param  string   $name     Name of a variable to get.
+     * @param  string   $default  Optional, default ''
+     * @return string
+     */
+    private function _sanitize_str(array $array, string $name, string $default = ''): string
+    {
+        if (isset($array[$name])) {
+            $result = filter_var(
+                trim($array[$name]),
+                FILTER_SANITIZE_STRING,
+                FILTER_FLAG_STRIP_BACKTICK | FILTER_FLAG_NO_ENCODE_QUOTES
+            );
+            if ($result === false || is_null($result)) {
+                $result = $default;
+            }
+        } else {
+            $result = $default;
+        }
+
+        return trim($result);
     }
 
     /**
