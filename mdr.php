@@ -5,7 +5,7 @@
  * File:      mdr.php
  * @author    Jeroen de Jong <jeroen@telartis.nl>
  * @copyright 2016-2017 Telartis BV
- * @version   1.02
+ * @version   1.03
  * @link      https://www.mijndomeinreseller.nl/api/
  *
  * This PHP client library allows you to seamlessly interact with the MijnDomeinReseller (MDR) API.
