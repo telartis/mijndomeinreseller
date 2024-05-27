@@ -1,7 +1,13 @@
 # MijnDomeinReseller (MDR) API PHP Client
 
-With this PHP class you can easily access the MijnDomeinReseller API.
+This PHP client library allows you to seamlessly interact with the MijnDomeinReseller (MDR) API.
 
-You must of course be a MDR customer to be able to use it.
+## Prerequisites
+- You must be a MijnDomeinReseller customer to use this client.
 
-See also: https://www.mijndomeinreseller.nl/api/
+## Getting Started
+To learn more about the MDR API and for detailed documentation, visit the [MijnDomeinReseller API Documentation]<https://www.mijndomeinreseller.nl/api/>.
+
+## Usage
+Simply include this PHP class in your project to start accessing MDR API features with ease.
+
