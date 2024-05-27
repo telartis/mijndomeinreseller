@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Project:     MijnDomeinReseller (MDR) API PHP Client
- * File:        mdr.php
- * @author      Jeroen de Jong <jeroen@telartis.nl>
- * @copyright   2016-2017 Telartis BV
- * @version     1.02
- * @link        https://www.mijndomeinreseller.nl/api/
+ * Project:   MijnDomeinReseller (MDR) API PHP Client
+ * File:      mdr.php
+ * @author    Jeroen de Jong <jeroen@telartis.nl>
+ * @copyright 2016-2017 Telartis BV
+ * @version   1.02
+ * @link      https://www.mijndomeinreseller.nl/api/
  *
- * With this PHP class you can easily access the MijnDomeinReseller API.
- * You must of course be a MDR customer to be able to use it.
+ * This PHP client library allows you to seamlessly interact with the MijnDomeinReseller (MDR) API.
+ * You must be a MijnDomeinReseller customer to use this client.
  *
  */
 
@@ -46,63 +46,64 @@ foreach ($zone_records as $row) {
 
 === Functions:
 
-__construct($user, $pass, $verbose = false)
-_dbg($var, $name)
-_add_error($error)
-_dns_record_add_modify_data($domain, $subdomain, $record_type, $destination, $mx_pref, $weight, $port)
-_fix_subdomain($domain, $subdomain)
+__construct(string $user, string $pass, bool $verbose = false)
+_dbg($var, string $name): string
+_add_error(string $error): void
+_fix_subdomain(string $domain, string $subdomain): string
+_dns_record_add_modify_data(string $domain, string $subdomain, string $record_type, string $destination, string $mx_pref, string $weight, string $port): array
 
-do_webservice($data, $msg = ''): array result
-print_result($result, $info = '', $only_errors = false, $extra_info = ''): void echo result when verbose is set
-has_error($result = []): bool
-get_error($result = []): string error
-domain_split($domain): array($private, $public)
+do_webservice(array $data, string $msg = ''): array
+print_result(array $result, string $info = '', bool $only_errors = false, string $extra_info = ''): void echo result when verbose is set
+has_error(array $result = []): bool
+get_error(array $result = []): string error
+domain_split(string $domain): array($private, $public)
 
-contact_add($contact): array result
-contact_get_details($contact_id): array result
-contact_list($sort = '', $order = 0): array|false
+contact_add(array $contact): array result
+contact_get_details(string $contact_id): array result
+contact_list(string $sort = '', int $order = 0): array|false
 
-dns_get_details($domain, $extra_info = ''): array zone_records [subdomain, record_id, record_type, destination, mx_pref, weight, port] or false
-dns_record_get($domain, $subdomain, $record_type, $mx_pref = ''): int record_id, 0 when not found or array with record_id's
-dns_record_get_by_id($domain, $record_id): array zone_record
-dns_record_del($domain, $record_id): array result
-dns_record_del_by_value($domain, $subdomain, $record_type, $mx_pref = ''): array result
-dns_record_add($domain, $subdomain, $record_type, $destination, $mx_pref = '', $weight = '', $port = ''): array result
-dns_record_modify($domain, $record_id, $subdomain, $record_type, $destination, $mx_pref = '', $weight = '', $port = ''): array result
-dns_record_add_or_modify($domain, $subdomain, $record_type, $destination, $mx_pref = ''): array result
-dns_get_spf($domain): string
-dns_set_spf_include($domain, $spf_include): array result
-dns_ttl_get($domain): int ttl
-dns_ttl_modify($domain, $ttl = 900): array result
-dns_set_web_records($domain, $destination): bool
-dns_del_mx_records($domain): bool
-dns_set_mx_records_google($domain): bool
+dns_get_details(string $domain, string $extra_info = ''): array|false - zone_records [subdomain, record_id, record_type, destination, mx_pref, weight, port]
+dns_record_get(string $domain, string $subdomain, string $record_type, string $mx_pref = ''): int|array - Integer record_id or 0 when not found - or Array with record_id's
+dns_record_get_by_id(string $domain, int $record_id): array zone_record
+dns_record_del(string $domain, int $record_id): array result
+dns_record_del_by_value(string $domain, string $subdomain, string $record_type, string $mx_pref = ''): array result
+dns_record_add(string $domain, string $subdomain, string $record_type, string $destination, string $mx_pref = '', string $weight = '', string $port = ''): array result
+dns_record_modify(string $domain, int $record_id, string $subdomain, string $record_type, string $destination, string $mx_pref = '', string $weight = '', string $port = ''): array result
+dns_record_add_or_modify(string $domain, string $subdomain, string $record_type, string $destination, string $mx_pref = ''): array result
+dns_get_spf(string $domain): string
+dns_set_spf_include(string $domain, string $spf_include): array result
+dns_ttl_get(string $domain): int
+dns_ttl_modify(string $domain, int $ttl = 900): array result
+dns_set_web_records(string $domain, string $destination): bool
+dns_del_mx_records(string $domain, array $keep_pref = []): bool
+dns_set_mx_records_google(string $domain): bool
 
-domain_auth_info($domain): array result
-domain_delete($domain): array result
-domain_get_details($domain): array result
-domain_authkey($domain): string
-domain_list($tld = '', $sort = '', $order = 0, $begin = ''): array|false / [domein, registrant, admin, tech, verloopdatum, status, autorenew]
-domain_list_delete(): array|false / [domein, tld, datum]
-domain_modify_contacts($domain, $registrant_id, $admin_id, $tech_id, $bill_id): array result
-domain_modify_ns($domain, $gebruik_dns = false, $ns_id = '', $dns_template = ''): array result
-domain_push_request($domain, $authkey): array result
-domain_register($domain, $gebruik_dns, $dns_template, $registrant_id, $admin_id, $tech_id, $bill_id): array result
-domain_renew($domain, $duur): array result
-domain_restore($domain): array result
-domain_set_autorenew($domain, $autorenew, $registrant_approve = true): array result
-domain_set_lock($domain, $set_lock): array result
-domain_transfer($domain, $authkey, $gebruik_dns, $dns_template, $registrant_id, $admin_id, $tech_id, $bill_id): array result
+domain_auth_info(string $domain): array result
+domain_delete(string $domain): array result
+domain_get_details(string $domain): array result
+domain_authkey(string $domain): string
+domain_list(string $tld = '', string $sort = '', int $order = 0, string $begin = ''): array|false - [domein, registrant, admin, tech, verloopdatum, status, autorenew]
+domain_list_delete(): array|false - [domein, tld, datum]
+domain_modify_contacts(string $domain, string $registrant_id, string $admin_id, string $tech_id, string $bill_id): array
+domain_modify_ns(string $domain, bool $gebruik_dns = false, string $ns_id = '', string $dns_template = ''): array result
+domain_push_request(string $domain, string $authkey): array result
+domain_register(string $domain, bool $gebruik_dns, string $dns_template, string $registrant_id, string $admin_id, string $tech_id, $bill_id): array result
+domain_renew(string $domain, int $duur): array result
+domain_restore(string $domain): array result
+domain_set_autorenew(string $domain, bool $autorenew, bool $registrant_approve = true): array result
+domain_set_lock(string $domain, bool $lock): array result
+domain_transfer(string $domain, string $authkey, bool $gebruik_dns, string $dns_template, string $registrant_id, string $admin_id, string $tech_id, string $bill_id): array result
 
-nameserver_add($ns1, $ns2, $ns3 = '', $ns1_ip = '', $ns2_ip = '', $ns3_ip = ''): array result
+nameserver_add(string $ns1, string $ns2, string $ns3 = '', string $ns1_ip = '', string $ns2_ip = '', string $ns3_ip = ''): array result
 nameserver_list(): array result
 
-dig($domain): array
+dig(string $domain): array
+_fix_dig_output(string $domain, string $input): string
 
 newgtld_list(): array [tld, sunrise_start, sunrise_end, landrush, golive, is_live]
 
 tld_list(): array
-tld_get_details($tld): array result
+tld_get_details(string $tld): array result
 _tld_price(array $details, string $key): int
 _sanitize_str(array $array, string $name, string $default = ''): string
 purchase_price(array $details): int
@@ -137,9 +138,9 @@ class mdr
      *
      * @param string   $user     Username
      * @param string   $pass     Password
-     * @param boolean  $verbose  Optional, default false
+     * @param boolean  $verbose  Optional, default FALSE
      */
-    public function __construct($user, $pass, $verbose = false)
+    public function __construct(string $user, string $pass, bool $verbose = false)
     {
         $this->user    = $user;
         $this->pass    = $pass;
@@ -149,11 +150,11 @@ class mdr
     /**
      * Debug string with variable type/name
      *
-     * @param  string   $var
+     * @param  mixed    $var
      * @param  string   $name
      * @return string
      */
-    private function _dbg($var, $name)
+    private function _dbg($var, string $name): string
     {
         ob_start();
         var_dump($var);
@@ -166,9 +167,10 @@ class mdr
     /**
      * Add an error to the result list
      *
-     * @param string   $error
+     * @param  string   $error
+     * @return void
      */
-    private function _add_error($error)
+    private function _add_error(string $error): void
     {
         $this->result['errcount']  = 1;
         $this->result['errno1']    = 0;
@@ -182,7 +184,7 @@ class mdr
      * @param  string   $subdomain
      * @return string
      */
-    private function _fix_subdomain($domain, $subdomain)
+    private function _fix_subdomain(string $domain, string $subdomain): string
     {
         $subdomain = trim($subdomain);
 
@@ -208,12 +210,12 @@ class mdr
      * @param  string   $subdomain
      * @param  string   $record_type
      * @param  string   $destination
-     * @param  integer  $mx_pref
-     * @param  integer  $weight
-     * @param  integer  $port
+     * @param  string   $mx_pref
+     * @param  string   $weight
+     * @param  string   $port
      * @return array
      */
-    private function _dns_record_add_modify_data($domain, $subdomain, $record_type, $destination, $mx_pref, $weight, $port)
+    private function _dns_record_add_modify_data(string $domain, string $subdomain, string $record_type, string $destination, string $mx_pref, string $weight, string $port): array
     {
         $data = [];
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
@@ -240,10 +242,10 @@ class mdr
      * Voer een webservice uit
      *
      * @param  array    $data
-     * @param  string   $msg   Optional
+     * @param  string   $msg   Optional, default ''
      * @return array result
      */
-    public function do_webservice($data, $msg = '')
+    public function do_webservice(array $data, string $msg = ''): array
     {
         $data['user']     = $this->user;
         $data['pass']     = md5($this->pass);
@@ -252,7 +254,7 @@ class mdr
         $this->url = 'https://manager.mijndomeinreseller.nl/api/?'.http_build_query($data);
 
         $this->result = [];
-        $this->result['command'] = $data['command'];
+        $this->result['command'] = $data['command'] ?? '';
 
         $ch = curl_init();
         if ($ch === false) {
@@ -307,11 +309,11 @@ class mdr
      *
      * @param  array    $result
      * @param  string   $info         Optional, default ''
-     * @param  boolean  $only_errors  Optional, default false
+     * @param  boolean  $only_errors  Optional, default FALSE
      * @param  string   $extra_info   Optional, default ''
      * @return void
      */
-    public function print_result($result, $info = '', $only_errors = false, $extra_info = '')
+    public function print_result(array $result, string $info = '', bool $only_errors = false, string $extra_info = ''): void
     {
         if ($this->verbose) {
             $command = array_key_exists('command', $result) ? $result['command'] : 'Unknown command';
@@ -328,9 +330,9 @@ class mdr
      * Heeft het resultaat een fout?
      *
      * @param  array    $result  Optional, default []
-     * @return bool
+     * @return boolean
      */
-    public function has_error($result = [])
+    public function has_error(array $result = []): bool
     {
         if (!$result) {
             $result = $this->result;
@@ -345,7 +347,7 @@ class mdr
      * @param  array    $result  Optional, default []
      * @return string            Error message
      */
-    public function get_error($result = [])
+    public function get_error(array $result = []): string
     {
         if (!$result) {
             $result = $this->result;
@@ -371,7 +373,7 @@ class mdr
      * @param  string   $domain
      * @return array($private, $public)
      */
-    public function domain_split($domain)
+    public function domain_split(string $domain): array
     {
         $domain = trim($domain);
         // Remove trailing dot from fully-qualified (unambiguous) absolute domain names:
@@ -399,7 +401,7 @@ class mdr
      * @param  array    $contact
      * @return array result
      */
-    public function contact_add($contact)
+    public function contact_add(array $contact): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -433,7 +435,7 @@ class mdr
      * @param  string   $contact_id
      * @return array result
      */
-    public function contact_get_details($contact_id)
+    public function contact_get_details(string $contact_id): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -447,9 +449,9 @@ class mdr
      *
      * @param  string   $sort  Optional, Default ''. bedrijfsnaam/voornaam/tussenvoegsel/achternaam/email/tel
      * @param  integer  $order Optional, Default 0=ASC. 1=DESC
-     * @return array or false
+     * @return array|false
      */
-    public function contact_list($sort = '', $order = 0)
+    public function contact_list(string $sort = '', int $order = 0)
     {
         $data = ['command' => __FUNCTION__];
 
@@ -494,9 +496,9 @@ class mdr
      *
      * @param  string   $domain
      * @param  string   $extra_info  Optional, default ''
-     * @return zone_records [subdomain, record_id, record_type, destination, mx_pref, weight, port] or false
+     * @return array|false  zone_records [subdomain, record_id, record_type, destination, mx_pref, weight, port]
      */
-    public function dns_get_details($domain, $extra_info = '')
+    public function dns_get_details(string $domain, string $extra_info = '')
     {
         $data = ['command' => __FUNCTION__];
 
@@ -540,9 +542,9 @@ class mdr
      * @param  string   $subdomain
      * @param  string   $record_type
      * @param  string   $mx_pref      Optional, default ''
-     * @return integer record_id or array with record_id's
+     * @return int|array  Integer record_id or Array with record_id's
      */
-    public function dns_record_get($domain, $subdomain, $record_type, $mx_pref = '')
+    public function dns_record_get(string $domain, string $subdomain, string $record_type, string $mx_pref = '')
     {
         $result = [];
         $subdomain = $this->_fix_subdomain($domain, $subdomain);
@@ -554,15 +556,17 @@ class mdr
                 }
             }
         }
-        if (!$result) {
-            return 0;
-        } elseif (count($result) > 1) {
-            return $result;
-        } else {
-            return $result[0];
-        }
+        $count = count($result);
+        if ($count == 0) {
 
-        return $result;
+            return (int) 0;
+        } elseif ($count == 1) {
+
+            return (int) $result[0];
+        } elseif ($count > 1) {
+
+            return (array) $result;
+        }
     }
 
     /**
@@ -572,7 +576,7 @@ class mdr
      * @param  integer  $record_id
      * @return array zone_record
      */
-    public function dns_record_get_by_id($domain, $record_id)
+    public function dns_record_get_by_id(string $domain, int $record_id): array
     {
         $result = [];
 
@@ -596,7 +600,7 @@ class mdr
      * @param  integer  $record_id
      * @return array result
      */
-    public function dns_record_del($domain, $record_id)
+    public function dns_record_del(string $domain, int $record_id): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -616,7 +620,7 @@ class mdr
      * @param  string   $mx_pref      Optional, default ''
      * @return array result
      */
-    public function dns_record_del_by_value($domain, $subdomain, $record_type, $mx_pref = '')
+    public function dns_record_del_by_value(string $domain, string $subdomain, string $record_type, string $mx_pref = ''): array
     {
         $data = ['command' => 'dns_record_del'];
 
@@ -633,6 +637,7 @@ class mdr
             $this->result['command'] = $data['command'];
             $this->_add_error("Error: multiple records found! $display");
             $this->print_result($this->result);
+
             return $this->result;
         } elseif (!$record_id) {
             // OK: record not found
@@ -640,9 +645,11 @@ class mdr
             $this->result['command']  = $data['command'];
             $this->result['errcount'] = 0;
             $this->result['done']     = 'true';
+
             return $this->result;
         } else {
             $data['record_id'] = $record_id;
+
             return $this->do_webservice($data, $display);
         }
     }
@@ -659,7 +666,7 @@ class mdr
      * @param  string   $port         Optional, default ''
      * @return array result
      */
-    public function dns_record_add($domain, $subdomain, $record_type, $destination, $mx_pref = '', $weight = '', $port = '')
+    public function dns_record_add(string $domain, string $subdomain, string $record_type, string $destination, string $mx_pref = '', string $weight = '', string $port = ''): array
     {
         $data = ['command' => __FUNCTION__];
         $data = array_merge($data, $this->_dns_record_add_modify_data($domain, $subdomain, $record_type, $destination, $mx_pref, $weight, $port));
@@ -680,7 +687,7 @@ class mdr
      * @param  string   $port         Optional, default ''
      * @return array result
      */
-    public function dns_record_modify($domain, $record_id, $subdomain, $record_type, $destination, $mx_pref = '', $weight = '', $port = '')
+    public function dns_record_modify(string $domain, int $record_id, string $subdomain, string $record_type, string $destination, string $mx_pref = '', string $weight = '', string $port = ''): array
     {
         $data = ['command' => __FUNCTION__];
         $data['record_id'] = $record_id;
@@ -698,7 +705,7 @@ class mdr
      * @param  string   $mx_pref      Optional, default ''
      * @return array result
      */
-    public function dns_record_add_or_modify($domain, $subdomain, $record_type, $destination, $mx_pref = '')
+    public function dns_record_add_or_modify(string $domain, string $subdomain, string $record_type, string $destination, string $mx_pref = ''): array
     {
         $subdomain = $this->_fix_subdomain($domain, $subdomain);
         $record_id = $this->dns_record_get($domain, $subdomain, $record_type, $mx_pref);
@@ -721,7 +728,7 @@ class mdr
      * @param  string   $domain
      * @return string
      */
-    public function dns_get_spf($domain)
+    public function dns_get_spf(string $domain): string
     {
         $result = '';
         $record_id = $this->dns_record_get($domain, '@', 'TXT');
@@ -746,7 +753,7 @@ class mdr
      * @param  string   $spf_include
      * @return array result
      */
-    public function dns_set_spf_include($domain, $spf_include)
+    public function dns_set_spf_include(string $domain, string $spf_include): array
     {
         $subdomain = '@';
         $record_type = 'TXT';
@@ -799,7 +806,7 @@ class mdr
      * @param  string   $domain
      * @return integer
      */
-    public function dns_ttl_get($domain)
+    public function dns_ttl_get(string $domain): int
     {
         $data['command'] = 'dns_get_details';
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
@@ -817,7 +824,7 @@ class mdr
      * @param  integer  $ttl     Optional, default 900 seconden (15 minuten)
      * @return array result
      */
-    public function dns_ttl_modify($domain, $ttl = 900)
+    public function dns_ttl_modify(string $domain, int $ttl = 900): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -835,7 +842,7 @@ class mdr
      * @param  string   $destination
      * @return boolean
      */
-    public function dns_set_web_records($domain, $destination)
+    public function dns_set_web_records(string $domain, string $destination): bool
     {
         $result = true;
 
@@ -854,7 +861,7 @@ class mdr
      * @param  array    $keep_pref  Optional, Priority lijst die niet verwijderd moet worden
      * @return boolean
      */
-    public function dns_del_mx_records($domain, $keep_pref = [])
+    public function dns_del_mx_records(string $domain, array $keep_pref = []): bool
     {
         $result = true;
 
@@ -879,7 +886,7 @@ class mdr
      * @param  string   $domain
      * @return boolean
      */
-    public function dns_set_mx_records_google($domain)
+    public function dns_set_mx_records_google(string $domain): bool
     {
         $result = true;
         $result = $result && $this->dns_del_mx_records($domain, [1]);
@@ -903,9 +910,9 @@ class mdr
      * 2. Een authorizatiekey voor .EU domeinnaam blijft 40 dagen geldig.
      *
      * @param  string   $domain
-     * @return string
+     * @return array
      */
-    public function domain_auth_info($domain)
+    public function domain_auth_info(string $domain): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -920,7 +927,7 @@ class mdr
      * @param  string   $domain
      * @return array result
      */
-    public function domain_delete($domain)
+    public function domain_delete(string $domain): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -935,7 +942,7 @@ class mdr
      * @param  string   $domain
      * @return array result
      */
-    public function domain_get_details($domain)
+    public function domain_get_details(string $domain): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -950,11 +957,11 @@ class mdr
      * @param  string   $domain
      * @return string
      */
-    public function domain_authkey($domain)
+    public function domain_authkey(string $domain): string
     {
         $details = $this->domain_get_details($domain);
 
-        return $details['authkey'];
+        return $details['authkey'] ?? '';
     }
 
     /**
@@ -963,10 +970,10 @@ class mdr
      * @param  string   $tld   Optional, Default ''
      * @param  string   $sort  Optional, Default ''. domein/registrant/admin/tech/verloopdatum/status
      * @param  integer  $order Optional, Default 0=ASC. 1=DESC
-     * @param  integer  $begin Optional, Default ''. Toon domeinnamen beginnend met letter van alfabet, waarden: a,b,c….x,y,z of 0-9
-     * @return [domein, registrant, admin, tech, verloopdatum, status, autorenew] or false
+     * @param  string   $begin Optional, Default ''. Toon domeinnamen beginnend met letter van alfabet, waarden: a,b,c...x,y,z of 0-9
+     * @return array|false - [domein, registrant, admin, tech, verloopdatum, status, autorenew]
      */
-    public function domain_list($tld = '', $sort = '', $order = 0, $begin = '')
+    public function domain_list(string $tld = '', string $sort = '', int $order = 0, string $begin = '')
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1001,7 +1008,7 @@ class mdr
     /**
      * Toon een overzicht van de domeinnamen welke in de afgelopen 30 dagen uit het account zijn wegverhuisd
      *
-     * @return [domein, tld, datum] or false
+     * @return array|false  - [domein, tld, datum]
      */
     public function domain_list_delete()
     {
@@ -1037,7 +1044,7 @@ class mdr
      * @param  string   $bill_id
      * @return array result
      */
-    public function domain_modify_contacts($domain, $registrant_id, $admin_id, $tech_id, $bill_id)
+    public function domain_modify_contacts(string $domain, string $registrant_id, string $admin_id, string $tech_id, string $bill_id): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1059,12 +1066,12 @@ class mdr
      * Wijzig de nameservers van een domeinnaam
      *
      * @param  string   $domain
-     * @param  boolean  $gebruik_dns   Optional, Gebruik de nameservers van MijnDomeinReseller, waarden: true/false
+     * @param  boolean  $gebruik_dns   Optional, Gebruik de nameservers van MijnDomeinReseller, waarden: TRUE or FALSE (default)
      * @param  string   $ns_id         Optional, NameserverID van nameserverset
      * @param  string   $dns_template  Optional, Naam van DNS template
      * @return array result
      */
-    public function domain_modify_ns($domain, $gebruik_dns = false, $ns_id = '', $dns_template = '')
+    public function domain_modify_ns(string $domain, bool $gebruik_dns = false, string $ns_id = '', string $dns_template = ''): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1085,7 +1092,7 @@ class mdr
      * @param  string   $authkey  Authorizatiekey voor verhuizing domeinnaam
      * @return array result
      */
-    public function domain_push_request($domain, $authkey)
+    public function domain_push_request(string $domain, string $authkey): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1108,7 +1115,7 @@ class mdr
      * @param  string   $bill_id
      * @return array result
      */
-    public function domain_register($domain, $gebruik_dns, $dns_template, $registrant_id, $admin_id, $tech_id, $bill_id)
+    public function domain_register(string $domain, bool $gebruik_dns, string $dns_template, string $registrant_id, string $admin_id, string $tech_id, $bill_id): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1137,7 +1144,7 @@ class mdr
      * @param  integer  $duur    Numerieke waarde voor aantal te verlengen jaren
      * @return array result
      */
-    public function domain_renew($domain, $duur)
+    public function domain_renew(string $domain, int $duur): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1155,7 +1162,7 @@ class mdr
      * @param  string   $domain Domeinnaam
      * @return array result
      */
-    public function domain_restore($domain)
+    public function domain_restore(string $domain): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1176,7 +1183,7 @@ class mdr
      *                                       Zie voor meer informatie: https://transit.secure.denic.de/en/
      * @return array result
      */
-    public function domain_set_autorenew($domain, $autorenew, $registrant_approve = true)
+    public function domain_set_autorenew(string $domain, bool $autorenew, bool $registrant_approve = true): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1207,7 +1214,7 @@ class mdr
      * @param  boolean  $lock    Domeinlock instellen
      * @return array result
      */
-    public function domain_set_lock($domain, $lock)
+    public function domain_set_lock(string $domain, bool $lock): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1231,7 +1238,7 @@ class mdr
      * @param  string   $bill_id
      * @return array result
      */
-    public function domain_transfer($domain, $authkey, $gebruik_dns, $dns_template, $registrant_id, $admin_id, $tech_id, $bill_id)
+    public function domain_transfer(string $domain, string $authkey, bool $gebruik_dns, string $dns_template, string $registrant_id, string $admin_id, string $tech_id, string $bill_id): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1266,7 +1273,7 @@ class mdr
      * @param  string   $ns3_ip
      * @return array result
      */
-    public function nameserver_add($ns1, $ns2, $ns3 = '', $ns1_ip = '', $ns2_ip = '', $ns3_ip = '')
+    public function nameserver_add(string $ns1, string $ns2, string $ns3 = '', string $ns1_ip = '', string $ns2_ip = '', string $ns3_ip = ''): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1289,7 +1296,7 @@ class mdr
      *
      * @return array result
      */
-    public function nameserver_list()
+    public function nameserver_list(): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1319,14 +1326,14 @@ class mdr
      * @param  string   $domain
      * @return array    [$dig_output, $zonefile]
      */
-    public function dig($domain)
+    public function dig(string $domain): array
     {
         $ns = 'ns1.mijndnsserver.nl';
+        $dig_output = '';
 
         $zone_records = $this->dns_get_details($domain);
         if ($zone_records === false) {
             $zonefile = $this->get_error();
-            $dig_output = '';
         } else {
             $subdomains = [];
             $records    = [];
@@ -1371,7 +1378,7 @@ class mdr
      * @param  string   $input
      * @return string
      */
-    private function _fix_dig_output($domain, $input)
+    private function _fix_dig_output(string $domain, string $input): string
     {
         $output = [];
         $input = str_replace("\t", ' ', $input);    // replace tabs with spaces
@@ -1412,7 +1419,7 @@ class mdr
      *
      * @return [tld, sunrise_start, sunrise_end, landrush, golive, is_live]
      */
-    public function newgtld_list()
+    public function newgtld_list(): array
     {
         $data = ['command' => __FUNCTION__];
         $result = $this->do_webservice($data);
@@ -1438,7 +1445,7 @@ class mdr
      *
      * @return array
      */
-    public function tld_list()
+    public function tld_list(): array
     {
         $data = ['command' => __FUNCTION__];
         $result = $this->do_webservice($data);
@@ -1458,7 +1465,7 @@ class mdr
      * @param  string   $tld
      * @return array result
      */
-    public function tld_get_details($tld)
+    public function tld_get_details(string $tld): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1491,11 +1498,11 @@ class mdr
     private function _tld_price(array $details, string $key): int
     {
         $price = (int) str_replace('.', '', $this->_sanitize_str($details, "prijs_$key", '0'));
-        $rate = $this->_sanitize_str($details, 'munt_wisselkoers', '0');
+        $rate  = (float) $this->_sanitize_str($details, 'munt_wisselkoers', '0');
         if ($rate) {
-            $currency = $this->_sanitize_str($details, "prijs_${key}_munt", 'EUR');
+            $currency = $this->_sanitize_str($details, "prijs_{$key}_munt", 'EUR');
             if ($currency && $currency != 'EUR') {
-                $price = (int) round($price * $rate);
+                $price = (int) round($price / $rate);
             }
         }
 
@@ -1515,8 +1522,8 @@ class mdr
         if (isset($array[$name])) {
             $result = filter_var(
                 trim($array[$name]),
-                FILTER_SANITIZE_STRING,
-                FILTER_FLAG_STRIP_BACKTICK | FILTER_FLAG_NO_ENCODE_QUOTES
+                FILTER_DEFAULT,
+                FILTER_FLAG_STRIP_BACKTICK
             );
             if ($result === false || is_null($result)) {
                 $result = $default;
