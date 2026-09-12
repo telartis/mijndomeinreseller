@@ -10,4 +10,3 @@ To learn more about the MDR API and for detailed documentation, visit the [MijnD
 
 ## Usage
 Simply include this PHP class in your project to start accessing MDR API features with ease.
-
