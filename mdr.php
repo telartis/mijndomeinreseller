@@ -4,9 +4,9 @@
  * Project:   MijnDomeinReseller (MDR) API PHP Client
  * File:      mdr.php
  * @author    Jeroen de Jong <jeroen@telartis.nl>
- * @copyright 2016-2017 Telartis BV
- * @version   1.03
- * @link      https://www.mijndomeinreseller.nl/api/
+ * @copyright 2016-2026 Telartis BV
+ * @version   1.04
+ * @link      https://www.mijndomeinreseller.nl/api/ => nextname.nl
  *
  * This PHP client library allows you to seamlessly interact with the MijnDomeinReseller (MDR) API.
  * You must be a MijnDomeinReseller customer to use this client.
@@ -46,13 +46,14 @@ foreach ($zone_records as $row) {
 
 === Functions:
 
-__construct(string $user, string $pass, bool $verbose = false)
+__construct(string $user, #[\SensitiveParameter] string $pass, bool $verbose = false)
 _dbg($var, string $name): string
 _add_error(string $error): void
 _fix_subdomain(string $domain, string $subdomain): string
 _dns_record_add_modify_data(string $domain, string $subdomain, string $record_type, string $destination, string $mx_pref, string $weight, string $port): array
 
 do_webservice(array $data, string $msg = ''): array
+parse_response(string $response): array - name => value, comment lines (;) skipped
 print_result(array $result, string $info = '', bool $only_errors = false, string $extra_info = ''): void echo result when verbose is set
 has_error(array $result = []): bool
 get_error(array $result = []): string error
@@ -124,23 +125,23 @@ namespace telartis\mijndomeinreseller;
 
 class mdr
 {
-    public $user     = '';
-    public $pass     = '';
-    public $verbose  = false;
-    public $debug    = false;
-    public $url      = '';
-    public $response = '';
-    public $result   = [];
-    public $errors   = '';
+    public string $user     = '';
+    public string $pass     = '';
+    public bool $verbose    = false;
+    public bool $debug      = false;
+    public string $url      = '';
+    public string $response = '';
+    public array $result    = [];
+    public string $errors   = '';
 
     /**
      * Constructor
      *
      * @param string   $user     Username
-     * @param string   $pass     Password
+     * @param #[\SensitiveParameter] string   $pass     Password
      * @param boolean  $verbose  Optional, default FALSE
      */
-    public function __construct(string $user, string $pass, bool $verbose = false)
+    public function __construct(string $user, #[\SensitiveParameter] string $pass, bool $verbose = false)
     {
         $this->user    = $user;
         $this->pass    = $pass;
@@ -150,18 +151,13 @@ class mdr
     /**
      * Debug string with variable type/name
      *
-     * @param  mixed    $var
+     * @param  mixed    $value
      * @param  string   $name
      * @return string
      */
-    private function _dbg($var, string $name): string
+    private function _dbg($value, string $name): string
     {
-        ob_start();
-        var_dump($var);
-        $dump = trim(ob_get_contents());
-        ob_end_clean();
-
-        return "$name:\n".$dump."\n";
+        return "$name:\n".dbgval($value)."\n";
     }
 
     /**
@@ -189,7 +185,7 @@ class mdr
         $subdomain = trim($subdomain);
 
         // remove trailing dot:
-        if (substr($subdomain, -1) == '.') {
+        if (str_ends_with($subdomain, '.')) {
             $subdomain = substr($subdomain, 0, -1);
         }
 
@@ -252,6 +248,7 @@ class mdr
         $data['authtype'] = 'md5';
 
         $this->url = 'https://manager.mijndomeinreseller.nl/api/?'.http_build_query($data);
+        // vanaf 31 december 2025: manager.nextname.nl/api
 
         $this->result = [];
         $this->result['command'] = $data['command'] ?? '';
@@ -265,16 +262,12 @@ class mdr
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
             curl_setopt($ch, CURLOPT_TIMEOUT, 120);
-            $this->response = curl_exec($ch);
-            if ($this->response === false) {
+            $response = curl_exec($ch); // FALSE on failure: a string property would coerce it to ''
+            $this->response = is_string($response) ? $response : '';
+            if ($response === false) {
                 $this->_add_error('cURL execute error '.curl_errno($ch).': '.curl_error($ch));
             } else {
-                foreach (explode("\n", $this->response) as $line) {
-                    if (substr($line[0], 1, 1) != ';') {  // ignore comments
-                        [$name, $value] = explode('=', $line, 2);
-                        $this->result[trim($name)] = trim($value);
-                    }
-                }
+                $this->result += $this->parse_response($this->response);
                 if ($this->debug) {
                     echo 'Response debug: '.$this->url."\n".
                         $this->_dbg($data, 'Data').
@@ -290,7 +283,6 @@ class mdr
                     );
                 }
             }
-            curl_close($ch);
         }
 
         if (strlen($msg)) {
@@ -302,6 +294,26 @@ class mdr
         }
 
         return $this->result;
+    }
+
+    /**
+     * Parse the API response: one name=value per line, lines starting with ; are comments
+     *
+     * @param  string   $response
+     * @return array    name => value
+     */
+    public function parse_response(string $response): array
+    {
+        $result = [];
+        foreach (explode("\n", $response) as $line) {
+            $line = trim($line);
+            if ($line !== '' && $line[0] != ';' && str_contains($line, '=')) {
+                [$name, $value] = explode('=', $line, 2);
+                $result[trim($name)] = trim($value);
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -377,7 +389,7 @@ class mdr
     {
         $domain = trim($domain);
         // Remove trailing dot from fully-qualified (unambiguous) absolute domain names:
-        if (substr($domain, -1) == '.') {
+        if (str_ends_with($domain, '.')) {
             $domain = substr($domain, 0, -1);
         }
         // See Public Suffix List at: http://publicsuffix.org/
@@ -736,7 +748,7 @@ class mdr
             // multiple SPF-records found
         } elseif ($record_id) {
             $zone_record = $this->dns_record_get_by_id($domain, $record_id);
-            if ($zone_record && strpos($zone_record['destination'], 'v=spf1') === 0) {
+            if ($zone_record && str_starts_with($zone_record['destination'], 'v=spf1')) {
                 $result = $zone_record['destination'];
             }
         } else {
@@ -776,9 +788,9 @@ class mdr
                 return $this->result;
             }
             $destination = $zone_record['destination'];
-            if (strpos($destination, $spf_include) !== false) {
+            if (str_contains($destination, $spf_include)) {
                 // no change, because the include is already there
-            } elseif (strpos($destination, 'v=spf1') === 0) {
+            } elseif (str_starts_with($destination, 'v=spf1')) {
                 // add include before last word
                 $words = explode(' ', $destination);
                 $last_word = array_pop($words);
@@ -1115,7 +1127,7 @@ class mdr
      * @param  string   $bill_id
      * @return array result
      */
-    public function domain_register(string $domain, bool $gebruik_dns, string $dns_template, string $registrant_id, string $admin_id, string $tech_id, $bill_id): array
+    public function domain_register(string $domain, bool $gebruik_dns, string $dns_template, string $registrant_id, string $admin_id, string $tech_id, string $bill_id): array
     {
         $data = ['command' => __FUNCTION__];
 
@@ -1132,7 +1144,7 @@ class mdr
         $data['autorenew'] = 'true'; // Autorenew inschakelen, waarden true/false
         $data['duur']      = 1; // Duur van registratie in jaar, waarden: 1 t/m 5
 
-        $info = ' gebruik_dns='.$gebruik_dns.($dns_template ? ' dns_template='.$dns_template : '');
+        $info = ' gebruik_dns='.$data['gebruik_dns'].($dns_template ? ' dns_template='.$dns_template : '');
 
         return $this->do_webservice($data, $domain.$info);
     }
@@ -1189,21 +1201,20 @@ class mdr
 
         [$data['domein'], $data['tld']] = $this->domain_split($domain);
 
-        $autorenew = $autorenew ? 'true' : 'false';
-        $data['autorenew'] = $autorenew;
+        $data['autorenew'] = $autorenew ? 'true' : 'false';
 
+        // only when switching autorenew off for a .de domain (the string 'false' used to be tested here, which is truthy)
+        $approve = '';
         if (!$autorenew && $data['tld'] == 'de') {
-            $registrant_approve = $registrant_approve ? 'true' : 'false';
-            $data['registrant_approve'] = 'true';
-        } else {
-            $registrant_approve = '';
+            $approve = $registrant_approve ? 'true' : 'false';
+            $data['registrant_approve'] = $approve;
         }
 
         return $this->do_webservice(
             $data,
             $domain.
-            ' autorenew='.$autorenew.
-            (!empty($registrant_approve) ? ' registrant_approve='.$registrant_approve : '')
+            ' autorenew='.$data['autorenew'].
+            ($approve !== '' ? ' registrant_approve='.$approve : '')
         );
     }
 
@@ -1257,7 +1268,7 @@ class mdr
         $data['autorenew'] = 'true'; // Autorenew inschakelen, waarden true/false
         $data['duur']      = 1; // Duur van registratie in jaar, waarden: 1 t/m 5
 
-        $info = ' gebruik_dns='.$gebruik_dns.($dns_template ? ' dns_template='.$dns_template : '');
+        $info = ' gebruik_dns='.$data['gebruik_dns'].($dns_template ? ' dns_template='.$dns_template : '');
 
         return $this->do_webservice($data, $domain.$info);
     }
@@ -1360,9 +1371,10 @@ class mdr
                     echo "dig @$ns +noall +answer -t CNAME -q $query\n";
                     echo "dig @$ns +noall +answer -t MX    -q $query\n";
                 }
-                $dig_output .= `dig @$ns +noall +answer -t A     -q $query`.
-                               `dig @$ns +noall +answer -t CNAME -q $query`.
-                               `dig @$ns +noall +answer -t MX    -q $query`;
+                $q = escapeshellarg($query); // host names come from the zone, never trust them in a shell command
+                $dig_output .= (string) shell_exec("dig @$ns +noall +answer -t A     -q $q").
+                               (string) shell_exec("dig @$ns +noall +answer -t CNAME -q $q").
+                               (string) shell_exec("dig @$ns +noall +answer -t MX    -q $q");
             }
 
             $dig_output = $this->_fix_dig_output($domain, $dig_output);
@@ -1388,7 +1400,9 @@ class mdr
             $line = trim($line);
             if (strlen($line)) {
                 $parts = explode(' ', $line, 6);
-                if (count($parts) == 5) {
+                if (count($parts) < 5) {
+                    continue; // not an answer line (e.g. a dig error message)
+                } elseif (count($parts) == 5) {
                     [$subdomain, $ttl, $class, $record_type, $destination] = $parts;
                     $mx_pref = '';
                 } else {
@@ -1397,7 +1411,7 @@ class mdr
                 $subdomain = $this->_fix_subdomain($domain, $subdomain);
 
                 // remove destination trailing dot:
-                if (substr($destination, -1) == '.') {
+                if (str_ends_with($destination, '.')) {
                     $destination = substr($destination, 0, -1);
                 }
 
@@ -1426,7 +1440,7 @@ class mdr
         $list = [];
         if (!$this->has_error($result)) {
             for ($i = 0, $total = (int) $result['newgtldcount']; $i < $total; $i++) {
-                $list = [
+                $list[] = [
                     'tld'           => $result["tld[$i]"],            // Extensie
                     'sunrise_start' => $result["sunrise_start[$i]"],  // Startdatum van sunrise, leeg bij onbekend
                     'sunrise_end'   => $result["sunrise_end[$i]"],    // Einddatum van sunrise, leeg bij onbekend
